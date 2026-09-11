@@ -1,0 +1,18 @@
+{
+  "name": "BBB Sarasota Home Show",
+  "short_name": "BBB Show",
+  "description": "Bumble Bee Blinds — Sarasota Home Show bookings and leads",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fff9e5",
+  "theme_color": "#24150e",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "bee-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

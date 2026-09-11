@@ -1,1 +1,275 @@
-<!doctype html><title>BBB Sarasota Home Show</title><p>Coming soon.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BBB Show">
+<meta name="theme-color" content="#24150e">
+<link rel="apple-touch-icon" href="bee-icon.png">
+<link rel="icon" href="bee-icon.png">
+<link rel="manifest" href="manifest.json">
+<title>Bumble Bee Blinds — Sarasota Home Show</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+
+<header class="header">
+  <div class="brand">
+    <img src="bee-icon.png" alt="">
+    <div>
+      <div class="brand-name">BUMBLE BEE BLINDS</div>
+      <div class="brand-sub">Sarasota Home Show</div>
+    </div>
+  </div>
+  <div class="pill" id="statusPill"><span class="dot"></span><span id="statusText">Online</span></div>
+</header>
+
+<main class="container">
+
+  <!-- Welcome -->
+  <section class="screen active" id="screen-welcome">
+    <div class="welcome">
+      <img src="logo-stacked.png" class="welcome-logo" alt="Bumble Bee Blinds">
+      <h1 class="welcome-title">Welcome to the Sarasota Home Show!</h1>
+      <p class="welcome-sub">Custom blinds, shades &amp; shutters from your local Bumble Bee Blinds design team.</p>
+      <button class="choice choice-book" id="btnBook" type="button">
+        <span class="choice-icon">📅</span>
+        <span>
+          <span class="choice-main">Book my FREE in-home consultation</span>
+          <span class="choice-note">Pick a time that works for you — takes 2 minutes</span>
+        </span>
+      </button>
+      <button class="choice choice-later" id="btnLater" type="button">
+        <span class="choice-icon">🎟️</span>
+        <span>
+          <span class="choice-main">Not ready yet? Send me my Home Show discount code</span>
+          <span class="choice-note">We'll follow up when the timing's right</span>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Your info -->
+  <section class="screen" id="screen-info">
+    <div class="steps" id="stepsInfo"></div>
+    <h2 class="screen-title">Tell us about you</h2>
+    <p class="screen-sub" id="infoSub">So your local designer can reach you</p>
+
+    <div class="row">
+      <div class="field" id="f-fname">
+        <label for="fname">First name</label>
+        <input id="fname" type="text" autocomplete="given-name" autocapitalize="words" placeholder="First name">
+        <div class="error-msg">Please enter your first name</div>
+      </div>
+      <div class="field" id="f-lname">
+        <label for="lname">Last name</label>
+        <input id="lname" type="text" autocomplete="family-name" autocapitalize="words" placeholder="Last name">
+        <div class="error-msg">Please enter your last name</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field" id="f-phone">
+        <label for="phone">Mobile phone</label>
+        <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(941) 555-1234">
+        <div class="error-msg">Please enter a 10-digit phone number</div>
+      </div>
+      <div class="field" id="f-email">
+        <label for="email">Email <span class="opt" id="emailOpt">(optional)</span></label>
+        <input id="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" placeholder="you@email.com">
+        <div class="error-msg">Please enter a valid email</div>
+      </div>
+    </div>
+
+    <div id="addrFull">
+      <div class="field" id="f-street">
+        <label for="street">Home address</label>
+        <input id="street" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Start typing your street address">
+        <div class="suggest" id="suggest"></div>
+        <div class="verified" id="verified">✓ Address verified</div>
+        <div class="error-msg">Please enter your street address</div>
+      </div>
+      <div class="row">
+        <div class="field" id="f-city">
+          <label for="city">City</label>
+          <input id="city" type="text" autocomplete="off" autocapitalize="words" placeholder="City">
+          <div class="error-msg">Please enter your city</div>
+        </div>
+        <div class="field zip" id="f-zip">
+          <label for="zip">Zip</label>
+          <input id="zip" type="text" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="34236">
+          <div class="error-msg">5-digit zip</div>
+        </div>
+      </div>
+    </div>
+    <div id="addrZipOnly" style="display:none">
+      <div class="field" id="f-zip2">
+        <label for="zip2">Zip code</label>
+        <input id="zip2" type="text" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="34236">
+        <div class="error-msg">Please enter a 5-digit zip code</div>
+      </div>
+    </div>
+    <button class="link-btn" id="btnSkipZip" type="button">Skip — just use my zip</button>
+
+    <label class="consent" id="f-consent">
+      <input type="checkbox" id="consent">
+      <span>OK to call/text me about my request. My info goes to the local, independently owned Bumble Bee Blinds franchise serving my area.</span>
+    </label>
+
+    <button class="btn-primary" id="btnInfoNext" type="button">Next →</button>
+    <button class="btn-secondary" data-back="welcome" type="button">← Back</button>
+  </section>
+
+  <!-- Products (+ timeline for later leads) -->
+  <section class="screen" id="screen-products">
+    <div class="steps" id="stepsProducts"></div>
+    <h2 class="screen-title">What interests you?</h2>
+    <p class="screen-sub">Tap all that apply</p>
+    <div class="grid3" id="productGrid"></div>
+
+    <div id="timelineBlock">
+      <div class="section-label">When are you looking to get started?</div>
+      <div class="grid2 timeline" id="timelineGrid"></div>
+      <div class="field" id="f-otherTimeline" style="display:none">
+        <input id="otherTimeline" type="text" placeholder="e.g. after the holidays, next spring">
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btnProductsNext" type="button">Next →</button>
+    <button class="btn-secondary" data-back="info" type="button">← Back</button>
+  </section>
+
+  <!-- Time slots (booking only) -->
+  <section class="screen" id="screen-slots">
+    <div class="steps" id="stepsSlots"></div>
+    <div class="designer">
+      <img src="bee-icon.png" alt="">
+      <div>
+        <div class="d-label">Your local designer</div>
+        <div class="d-name" id="designerName">Bumble Bee Blinds</div>
+      </div>
+    </div>
+    <div class="banner" id="offlineBanner">Offline — pick your preferred time and we'll confirm it by phone.</div>
+    <h2 class="screen-title">Pick a day</h2>
+    <p class="screen-sub">Free in-home consultation · your designer arrives within the 3-hour window you pick</p>
+    <div class="date-grid" id="dateGrid"></div>
+    <div id="slotBlock">
+      <div class="section-label" id="slotTitle">Pick a time</div>
+      <div class="slot-grid" id="slotGrid"></div>
+    </div>
+    <div class="hint" id="slotHint">Tap a day to see open times</div>
+    <div class="field">
+      <label for="notes">Anything we should know? <span class="opt">(optional)</span></label>
+      <input id="notes" type="text" placeholder="Gate code, number of windows, best time to call…">
+    </div>
+    <button class="btn-primary" id="btnConfirm" type="button" disabled>Confirm my appointment</button>
+    <button class="btn-secondary" data-back="products" type="button">← Back</button>
+  </section>
+
+  <!-- Thank you -->
+  <section class="screen" id="screen-thanks">
+    <div class="thanks">
+      <img src="logo-stacked.png" class="bee" alt="Bumble Bee Blinds">
+      <h2 class="screen-title" id="thanksTitle">You're all set!</h2>
+      <div class="appt" id="apptBox" style="display:none"></div>
+      <div class="promo-box">
+        <div class="promo-label">Your Home Show discount code</div>
+        <div class="promo-code" id="promoCode">BB185</div>
+        <div class="promo-detail" id="promoDetail">Mention this code at your consultation</div>
+      </div>
+      <p class="who" id="whoText"></p>
+      <button class="btn-primary" id="btnNextGuest" type="button">Next Guest →</button>
+    </div>
+  </section>
+
+</main>
+
+<button class="gear" id="gear" type="button" aria-label="Staff settings">⚙︎</button>
+
+<!-- Busy -->
+<div class="overlay" id="busy"><div class="dialog"><div class="spinner"></div><p id="busyText">One moment…</p></div></div>
+
+<!-- Idle -->
+<div class="overlay" id="idle">
+  <div class="dialog">
+    <h2>Still there?</h2>
+    <p>For your privacy, this screen will reset in</p>
+    <div class="countdown" id="idleCount">10</div>
+    <button class="btn-primary" id="btnStillHere" type="button">I'm still here</button>
+  </div>
+</div>
+
+<!-- PIN -->
+<div class="overlay" id="pinOverlay">
+  <div class="dialog" id="pinDialog">
+    <h2>Staff only</h2>
+    <p>Enter the 4-digit PIN</p>
+    <div class="pin-dots" id="pinDots"><span></span><span></span><span></span><span></span></div>
+    <div class="pin-error" id="pinError"></div>
+    <div class="pin-pad" id="pinPad"></div>
+  </div>
+</div>
+
+<!-- Admin -->
+<div class="admin" id="admin">
+  <div class="admin-inner">
+    <div class="admin-top">
+      <h2>Staff panel</h2>
+      <button class="a-btn dark" id="btnAdminClose" type="button">Close</button>
+    </div>
+
+    <div class="panel">
+      <h3>Connection</h3>
+      <div class="a-row" style="align-items:center">
+        <div style="flex:1;font-size:18px" id="adminConn"></div>
+        <button class="a-btn" id="btnRetry" type="button">Retry now</button>
+        <button class="a-btn ghost" id="btnExport" type="button">Export CSV</button>
+      </div>
+      <div class="note" id="adminQueueNote"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Lead tally (open area only)</h3>
+      <div id="tallyBox" class="empty">Loading…</div>
+    </div>
+
+    <div class="panel">
+      <h3>Even-split settings</h3>
+      <div class="a-row">
+        <div class="field"><label for="setGap">Gap before splitting</label><input id="setGap" type="number" inputmode="numeric" min="1"></div>
+        <div class="field"><label for="setMiles">Max extra miles</label><input id="setMiles" type="number" inputmode="numeric" min="0"></div>
+        <button class="a-btn" id="btnSaveSettings" type="button">Save</button>
+      </div>
+      <div class="note">A lead only moves when its location is this many leads ahead, and the other shop is no more than this many miles farther.</div>
+    </div>
+
+    <div class="panel">
+      <h3>Recent leads</h3>
+      <div id="recentBox" class="empty">Loading…</div>
+    </div>
+
+    <div class="panel">
+      <h3>Blocked times</h3>
+      <div id="blocksBox" class="empty">Loading…</div>
+      <div class="a-row" style="margin-top:12px">
+        <div class="field"><label for="blkFr">Location</label>
+          <select id="blkFr"><option value="tampa">Tampa</option><option value="venice">Venice</option></select></div>
+        <div class="field"><label for="blkDate">Date</label><input id="blkDate" type="date"></div>
+        <div class="field"><label for="blkSlot">Time</label><select id="blkSlot"></select></div>
+        <div class="field"><label for="blkReason">Reason</label><input id="blkReason" type="text" placeholder="Optional"></div>
+        <button class="a-btn" id="btnAddBlock" type="button">Block</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="config.js?v=1"></script>
+<script src="offline-routing.js?v=1"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>
