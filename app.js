@@ -601,6 +601,7 @@
   var lastActivity = Date.now(), idleShown = false, idleLeft = 0;
   function activity() {
     lastActivity = Date.now();
+    lastTouch = lastActivity;
     if (idleShown) hideIdle();
   }
   function hideIdle() { idleShown = false; $('idle').classList.remove('on'); }
@@ -618,6 +619,34 @@
       $('idleCount').textContent = Math.max(idleLeft, 0);
       if (idleLeft <= 0) { hideIdle(); hidePin(); goWelcome(); }
     }
+  }
+
+  // ── Auto-update ──
+  // tools/bump_version.py bumps APP_VERSION, the ?v= asset tags and version.json
+  // together on every publish. When version.json moves ahead, reload onto a
+  // fresh URL (so Safari can't serve the cached page), but only while the
+  // kiosk sits untouched on the welcome screen, never mid-customer.
+  var APP_VERSION = '4';
+  var VERSION_CHECK_MS = (Number(params.get('vcheck')) || 180) * 1000;
+  var RELOAD_AFTER_IDLE_MS = (Number(params.get('vidle')) || 20) * 1000;
+  var lastTouch = Date.now(), pendingVersion = null;
+  function checkVersion() {
+    fetch('version.json?t=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (v) { if (v && v.version && String(v.version) !== APP_VERSION) pendingVersion = String(v.version); })
+      .catch(function () { /* offline: try again next time */ });
+  }
+  function maybeReload() {
+    if (!pendingVersion || flushing) return;
+    var idle = $('screen-welcome').classList.contains('active') && !$('admin').classList.contains('on') &&
+      !$('pinOverlay').classList.contains('on') && !$('busy').classList.contains('on') &&
+      Date.now() - lastTouch >= RELOAD_AFTER_IDLE_MS;
+    if (!idle) return;
+    // Try each new version once per session, so a stale CDN copy can't cause a reload loop.
+    if (sessionStorage.getItem('bbbss_reloaded_to') === pendingVersion) return;
+    sessionStorage.setItem('bbbss_reloaded_to', pendingVersion);
+    params.set('v', pendingVersion);
+    location.replace(location.pathname + '?' + params.toString());
   }
 
   // ── Admin: PIN ──
@@ -906,4 +935,7 @@
   // Keep the Apps Script warm so a customer never waits through a ~17 s cold start.
   setInterval(loadConfig, 4 * 60 * 1000);
   setInterval(idleTick, 1000);
+  checkVersion();
+  setInterval(checkVersion, VERSION_CHECK_MS);
+  setInterval(maybeReload, 2000);
 })();
