@@ -626,7 +626,7 @@
   // together on every publish. When version.json moves ahead, reload onto a
   // fresh URL (so Safari can't serve the cached page), but only while the
   // kiosk sits untouched on the welcome screen, never mid-customer.
-  var APP_VERSION = '4';
+  var APP_VERSION = '5';
   var VERSION_CHECK_MS = (Number(params.get('vcheck')) || 180) * 1000;
   var RELOAD_AFTER_IDLE_MS = (Number(params.get('vidle')) || 20) * 1000;
   var lastTouch = Date.now(), pendingVersion = null;
@@ -740,7 +740,29 @@
     var moved = (res.moved || []).length;
     $('tallyBox').innerHTML = '<table class="tally"><tr><th></th><th>Tampa</th><th>Venice</th><th>Status</th></tr>' +
       line('booking', 'Bookings') + line('later', 'Discount-code leads') + '</table>' +
-      '<div class="note">Territory leads are never counted. ' + moved + ' lead(s) moved so far.</div>';
+      '<div class="note">Territory leads are never counted. ' + moved + ' lead(s) moved so far.</div>' +
+      '<div class="tally-actions"><button type="button" class="a-btn ghost-danger" data-reset-tally>Reset balance to 0</button></div>';
+  }
+
+  // Test leads before doors open shouldn't tip the even split: zero the counts.
+  function askResetTally() {
+    var box = $('tallyBox');
+    if (box.querySelector('.confirm-row')) return;
+    var div = document.createElement('div');
+    div.className = 'confirm-row';
+    div.innerHTML = '<span style="flex:1">Start the even split from zero? Leads stay in the Sheet; they just stop counting toward the balance.</span>' +
+      '<button type="button" class="a-btn danger" data-confirm-reset>Reset balance</button>' +
+      '<button type="button" class="a-btn ghost" data-cancel-reset>Cancel</button>';
+    box.appendChild(div);
+  }
+
+  function doResetTally() {
+    busy(true, 'Resetting balance…');
+    adminCall({ op: 'resetTally' }).then(function (res) {
+      busy(false);
+      if (res && res.ok) { toast('Balance reset'); renderTally(res); }
+      else toast('Could not reset: ' + (res && res.message || 'error'));
+    }, function () { busy(false); toast('Offline — try again when connected'); });
   }
 
   var recentLeads = [];
@@ -756,7 +778,8 @@
         '<div class="l-meta">' + (l.type === 'booking' ? '📅 ' + esc(l.date) + ' ' + esc(l.time) : '🎟️ Discount code') +
         ' · ' + esc(l.zip) + ' · ' + esc(l.reason) + (l.status && l.status !== 'New' ? ' · <strong>' + esc(l.status) + '</strong>' : '') + '</div>' +
         (flags ? '<div class="l-meta">' + flags + '</div>' : '') +
-        '</div><button type="button" class="a-btn ghost" data-move="' + i + '">Move to ' + shortName(to) + '</button></div>';
+        '</div><button type="button" class="a-btn ghost" data-move="' + i + '">Move to ' + shortName(to) + '</button>' +
+        '<button type="button" class="a-btn ghost-danger" data-del="' + i + '">Delete</button></div>';
     }).join('');
   }
 
@@ -781,6 +804,27 @@
       busy(false);
       if (res && res.ok) { toast(l.name + ' moved to ' + shortName(to)); loadAdmin(); }
       else toast('Could not move: ' + (res && res.message || 'error'));
+    }, function () { busy(false); toast('Offline — try again when connected'); });
+  }
+
+  function askDelete(i) {
+    var row = document.querySelector('.lead[data-i="' + i + '"]');
+    if (!row || row.querySelector('.confirm-row')) return;
+    var div = document.createElement('div');
+    div.className = 'confirm-row';
+    div.innerHTML = '<span style="flex:1">Delete ' + esc(recentLeads[i].name) + '? This removes the lead from the Sheet and frees its time slot.</span>' +
+      '<button type="button" class="a-btn danger" data-confirm-del="' + i + '">Delete lead</button>' +
+      '<button type="button" class="a-btn ghost" data-cancel-move>Cancel</button>';
+    row.appendChild(div);
+  }
+
+  function doDelete(i) {
+    var l = recentLeads[i];
+    busy(true, 'Deleting lead…');
+    adminCall({ op: 'delete', id: l.id }).then(function (res) {
+      busy(false);
+      if (res && res.ok) { toast('Lead deleted'); loadAdmin(); }
+      else toast('Could not delete: ' + (res && res.message || 'error'));
     }, function () { busy(false); toast('Offline — try again when connected'); });
   }
 
@@ -902,9 +946,17 @@
     $('blkSlot').innerHTML = '<option value="ALL">All day</option>' + config.slots.map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('');
     $('recentBox').addEventListener('click', function (e) {
       var m = e.target.closest('[data-move]'), c = e.target.closest('[data-confirm-move]'), x = e.target.closest('[data-cancel-move]');
+      var d = e.target.closest('[data-del]'), cd = e.target.closest('[data-confirm-del]');
       if (c) doMove(+c.dataset.confirmMove);
+      else if (cd) doDelete(+cd.dataset.confirmDel);
       else if (x) x.closest('.confirm-row').remove();
       else if (m) askMove(+m.dataset.move);
+      else if (d) askDelete(+d.dataset.del);
+    });
+    $('tallyBox').addEventListener('click', function (e) {
+      if (e.target.closest('[data-confirm-reset]')) doResetTally();
+      else if (e.target.closest('[data-cancel-reset]')) e.target.closest('.confirm-row').remove();
+      else if (e.target.closest('[data-reset-tally]')) askResetTally();
     });
     $('blocksBox').addEventListener('click', function (e) {
       var b = e.target.closest('[data-unblock]');

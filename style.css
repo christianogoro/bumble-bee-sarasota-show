@@ -272,6 +272,9 @@ button { font-family: inherit; color: inherit; cursor: pointer; }
 .a-btn.dark { background: var(--coffee); color: #fff; }
 .a-btn.ghost { background: transparent; border: 2px solid var(--chino); }
 .a-btn.danger { background: var(--error); color: #fff; }
+.a-btn.ghost-danger { background: transparent; border: 2px solid var(--error); color: var(--error); }
+.tally-actions { margin-top: 12px; }
+.tally-actions + .confirm-row { margin-top: 12px; }
 .lead { border-bottom: 1px solid #eee4c8; padding: 12px 0; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 .lead:last-child { border-bottom: none; }
 .lead .l-main { flex: 1; min-width: 220px; }
