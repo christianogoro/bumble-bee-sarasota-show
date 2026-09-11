@@ -12,7 +12,9 @@
   var PLACES_ON = params.get('places') !== 'off' && !!PLACES_KEY && PLACES_KEY.indexOf('REPLACE') !== 0;
   var IDLE_SECONDS = Number(params.get('idle')) || CONFIG.IDLE_SECONDS || 90;
   var IDLE_COUNTDOWN = Number(params.get('idlecount')) || 10;
-  var TIMEOUT_MS = 12000;
+  // Apps Script can take ~17 s on a cold start (~2.5 s warm). Waiting longer is
+  // safe: a retried submit with the same lead id is ignored by the server.
+  var TIMEOUT_MS = 25000;
   var RETRY_MS = 30000;
 
   var LS = { queue: 'bbbss_queue', all: 'bbbss_all', config: 'bbbss_config', pinHash: 'bbbss_pin_hash' };
@@ -451,7 +453,10 @@
   }
 
   function confirmBooking() {
-    if (!s.date || !s.time) return;
+    // Disable first, before either branch, so a double-tap can't queue the same
+    // appointment twice under two different lead ids. renderSlots() re-enables it.
+    if (!s.date || !s.time || $('btnConfirm').disabled) return;
+    $('btnConfirm').disabled = true;
     var payload = basePayload();
     payload.date = s.date;
     payload.time = s.time;
@@ -901,5 +906,7 @@
   initPlaces();
   loadConfig().then(flushQueue);
   setInterval(flushQueue, RETRY_MS);
+  // Keep the Apps Script warm so a customer never waits through a ~17 s cold start.
+  setInterval(loadConfig, 4 * 60 * 1000);
   setInterval(idleTick, 1000);
 })();
