@@ -212,7 +212,6 @@
 
   function resetForm() {
     ['fname', 'lname', 'phone', 'email', 'street', 'city', 'zip', 'zip2', 'otherTimeline', 'notes'].forEach(function (id) { $(id).value = ''; });
-    $('consent').checked = false;
     document.querySelectorAll('.has-error').forEach(function (el) { el.classList.remove('has-error'); });
     document.querySelectorAll('.card.selected').forEach(function (el) { el.classList.remove('selected'); });
     $('f-otherTimeline').style.display = 'none';
@@ -256,10 +255,6 @@
       ok = fieldError('street', booking && !$('street').value.trim()) && ok;
       ok = fieldError('city', booking && !$('city').value.trim()) && ok;
     }
-    var consentOk = $('consent').checked;
-    $('f-consent').classList.toggle('has-error', !consentOk);
-    if (!consentOk && ok) toast('Please check the box so we can contact you');
-    ok = consentOk && ok;
     if (!ok) {
       var first = document.querySelector('#screen-info .has-error');
       if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -335,7 +330,7 @@
     return Object.assign({
       action: 'submit', id: uuid(), createdAt: new Date().toISOString(), type: s.type,
       products: Object.keys(s.products), timeline: timelineValue(), notes: '',
-      date: '', time: '', consent: true, routed: null, offline: false, offlineRoute: null
+      date: '', time: '', routed: null, offline: false, offlineRoute: null
     }, f);
   }
 
@@ -848,7 +843,6 @@
     ['fname', 'lname', 'phone', 'email', 'street', 'city', 'zip', 'zip2'].forEach(function (id) {
       $(id).addEventListener('input', function () { $('f-' + id).classList.remove('has-error'); });
     });
-    $('consent').addEventListener('change', function () { $('f-consent').classList.remove('has-error'); });
 
     $('dateGrid').addEventListener('click', function (e) {
       var b = e.target.closest('.date');

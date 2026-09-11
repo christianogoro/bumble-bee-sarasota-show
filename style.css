@@ -29,7 +29,9 @@ button { font-family: inherit; color: inherit; cursor: pointer; }
 /* ── Header ── */
 .header {
   background: var(--coffee);
-  padding: 12px 24px;
+  /* Home-screen mode draws under the iPad status bar (black-translucent);
+     push the header content below the clock/battery. */
+  padding: calc(12px + env(safe-area-inset-top)) 24px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -125,13 +127,6 @@ button { font-family: inherit; color: inherit; cursor: pointer; }
 .suggest .s-sub { color: var(--muted); font-size: 15px; display: block; margin-top: 2px; }
 .suggest .s-foot { font-size: 12px; color: var(--muted); padding: 6px 18px; text-align: right; }
 
-.consent {
-  display: flex; gap: 14px; align-items: flex-start; background: #fff;
-  border: 2px solid var(--chino); border-radius: 14px; padding: 16px 18px; margin: 6px 0 18px;
-  font-size: 16px; line-height: 1.45; min-height: 56px;
-}
-.consent input { width: 30px; height: 30px; flex: none; accent-color: var(--buttercup); margin-top: 1px; }
-.consent.has-error { border-color: var(--error); }
 
 /* ── Cards (products / timeline) ── */
 .section-label { font-size: 20px; font-weight: 800; margin: 8px 0 10px; }
@@ -247,14 +242,14 @@ button { font-family: inherit; color: inherit; cursor: pointer; }
 @keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 
 .gear {
-  position: fixed; left: 10px; bottom: 10px; z-index: 150; width: 56px; height: 56px;
+  position: fixed; left: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 150; width: 56px; height: 56px;
   border: none; background: transparent; color: var(--chino); font-size: 26px; opacity: 0.55;
 }
 
 /* ── Admin ── */
 .admin { position: fixed; inset: 0; z-index: 250; background: var(--gin-fizz); overflow-y: auto; display: none; }
 .admin.on { display: block; }
-.admin-inner { max-width: 900px; margin: 0 auto; padding: 20px 24px 60px; }
+.admin-inner { max-width: 900px; margin: 0 auto; padding: calc(20px + env(safe-area-inset-top)) 24px 60px; }
 .admin-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .admin-top h2 { font-size: 28px; }
 .panel { background: #fff; border: 2px solid #eee4c8; border-radius: 18px; padding: 18px 20px; margin-bottom: 16px; }
