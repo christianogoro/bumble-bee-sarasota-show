@@ -21,7 +21,7 @@
 
   var DEFAULT_CONFIG = {
     franchises: {
-      tampa: { name: 'Bumble Bee Blinds of Tampa', phone: '(813) 535-3028', promo: 'BB185' },
+      tampa: { name: 'Bumble Bee Blinds of Tampa', phone: '(813) 599-8175', promo: 'BB185' },
       venice: { name: 'Bumble Bee Blinds of Wellen Park', phone: '(941) 398-0648', promo: 'BB176' }
     },
     slots: ['9 AM - 12 PM', '12 PM - 3 PM', '3 PM - 6 PM', '6 PM - 9 PM'],
@@ -83,6 +83,9 @@
   function prettyDate(str) {
     return parseYmd(str).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   }
+  // Slots are stored as '3 PM - 6 PM', but the designer arrives at the start
+  // time and the visit runs 2-3 hours, so customers only ever see '3 PM'.
+  function arrival(label) { return String(label || '').split(' - ')[0]; }
   function brand(fr) { return (config.franchises && config.franchises[fr]) || DEFAULT_CONFIG.franchises[fr]; }
   function shortName(fr) { return fr === 'tampa' ? 'Tampa' : 'Venice'; }
 
@@ -442,7 +445,7 @@
     $('slotGrid').innerHTML = config.slots.map(function (label) {
       var ok = open.indexOf(label) !== -1;
       return '<button type="button" class="slot' + (s.time === label ? ' selected' : '') + '" data-slot="' + esc(label) + '"' + (ok ? '' : ' disabled') + '>' +
-        '<span class="sl">' + esc(label.replace(' - ', ' – ')) + '</span>' +
+        '<span class="sl">' + esc(arrival(label)) + '</span>' +
         '<span class="sn">' + (ok ? SLOT_NOTES[label] || '' : 'Booked') + '</span></button>';
     }).join('');
   }
@@ -504,9 +507,9 @@
     $('thanksTitle').textContent = booked ? 'You\'re booked!' : pending ? 'Thank you! We\'ll call to confirm your time' : 'You\'re all set!';
     if (o.date) {
       $('apptBox').style.display = '';
-      $('apptBox').innerHTML = '<strong>' + esc(prettyDate(o.date)) + '</strong>' + esc(o.time.replace(' - ', ' – ')) +
+      $('apptBox').innerHTML = '<strong>' + esc(prettyDate(o.date)) + '</strong>' + esc('Designer arrives at ' + arrival(o.time)) +
         (pending ? '<br><span style="color:var(--muted);font-size:17px">Requested time — we\'ll confirm by phone</span>'
-          : '<br><span style="color:var(--muted);font-size:17px">Your designer arrives within this window</span>');
+          : '<br><span style="color:var(--muted);font-size:17px">Plan on 2–3 hours if we\'re measuring and quoting</span>');
     } else {
       $('apptBox').style.display = 'none';
     }
